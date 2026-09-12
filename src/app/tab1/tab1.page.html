@@ -1,17 +1,153 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<form id="msform">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ul id="progressbar">
+    <li [class.active]="currentStep >= 0">
+      Account Setup
+    </li>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
-</ion-content>
+    <li [class.active]="currentStep >= 1">
+      Social Profiles
+    </li>
+
+    <li [class.active]="currentStep >= 2">
+      Personal Details
+    </li>
+  </ul>
+
+
+  <!-- STEP 1 -->
+  <fieldset #fieldset>
+
+    <h2 class="fs-title">
+      Create your account
+    </h2>
+
+    <h3 class="fs-subtitle">
+      This is step 1
+    </h3>
+
+    <input
+      type="text"
+      name="email"
+      placeholder="Email"
+    />
+
+    <input
+      type="password"
+      name="pass"
+      placeholder="Password"
+    />
+
+    <input
+      type="password"
+      name="cpass"
+      placeholder="Confirm Password"
+    />
+
+    <input
+      type="button"
+      class="next action-button"
+      value="Next"
+      (click)="next()"
+    />
+
+  </fieldset>
+
+
+  <!-- STEP 2 -->
+  <fieldset #fieldset>
+
+    <h2 class="fs-title">
+      Social Profiles
+    </h2>
+
+    <h3 class="fs-subtitle">
+      Your presence on the social network
+    </h3>
+
+    <input
+      type="text"
+      name="twitter"
+      placeholder="Twitter"
+    />
+
+    <input
+      type="text"
+      name="facebook"
+      placeholder="Facebook"
+    />
+
+    <input
+      type="text"
+      name="gplus"
+      placeholder="Google Plus"
+    />
+
+    <input
+      type="button"
+      class="previous action-button"
+      value="Previous"
+      (click)="previous()"
+    />
+
+    <input
+      type="button"
+      class="next action-button"
+      value="Next"
+      (click)="next()"
+    />
+
+  </fieldset>
+
+
+  <!-- STEP 3 -->
+  <fieldset #fieldset>
+
+    <h2 class="fs-title">
+      Personal Details
+    </h2>
+
+    <h3 class="fs-subtitle">
+      We will never sell it
+    </h3>
+
+    <input
+      type="text"
+      name="fname"
+      placeholder="First Name"
+    />
+
+    <input
+      type="text"
+      name="lname"
+      placeholder="Last Name"
+    />
+
+    <input
+      type="text"
+      name="phone"
+      placeholder="Phone"
+    />
+
+    <textarea
+      name="address"
+      placeholder="Address">
+    </textarea>
+
+    <input
+      type="button"
+      class="previous action-button"
+      value="Previous"
+      (click)="previous()"
+    />
+
+    <a
+      href="https://twitter.com/GoktepeAtakan"
+      class="submit action-button"
+      target="_top">
+      Submit
+    </a>
+
+  </fieldset>
+
+</form>

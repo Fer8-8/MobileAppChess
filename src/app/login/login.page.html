@@ -1,0 +1,40 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-wrapper">
+    <form id="msform" (ngSubmit)="login()" #loginForm="ngForm">
+      <fieldset>
+        <h2 class="fs-title">Iniciar sesión</h2>
+        <h3 class="fs-subtitle">Ingresa tus credenciales para continuar</h3>
+
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="credentials.email"
+          required
+          autocomplete="email"
+          placeholder="Correo electrónico"
+        />
+
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="credentials.password"
+          required
+          minlength="6"
+          autocomplete="current-password"
+          placeholder="Contraseña"
+        />
+
+        <p class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </p>
+
+        <button
+          type="submit"
+          class="action-button"
+          [disabled]="loginForm.invalid || loading">
+          {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
+        </button>
+      </fieldset>
+    </form>
+  </div>
+</ion-content>
