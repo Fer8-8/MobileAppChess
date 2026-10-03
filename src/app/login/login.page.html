@@ -1,40 +1,47 @@
-<ion-content [fullscreen]="true" class="login-content">
-  <div class="login-wrapper">
-    <form id="msform" (ngSubmit)="login()" #loginForm="ngForm">
-      <fieldset>
-        <h2 class="fs-title">Iniciar sesión</h2>
-        <h3 class="fs-subtitle">Ingresa tus credenciales para continuar</h3>
+<ion-content [fullscreen]="true">
+  <main class="auth-shell">
+    <section class="brand-panel">
+      <a class="brand" aria-label="Outplay"><span>♞</span> OUTPLAY</a>
+      <div class="brand-copy">
+        <p class="eyebrow">CHESS, BEYOND THE EXPECTED</p>
+        <h1>Every upset<br><em>starts with a move.</em></h1>
+        <p>Sign in to explore the most surprising games from the world's biggest chess events.</p>
+      </div>
+      <div class="board-art" aria-hidden="true"><span>♜</span></div>
+      <p class="source-note"><i></i> Live tournament data from Lichess</p>
+    </section>
 
-        <input
-          type="email"
-          name="email"
-          [(ngModel)]="credentials.email"
-          required
-          autocomplete="email"
-          placeholder="Correo electrónico"
-        />
+    <section class="form-panel">
+      <form class="auth-form" (ngSubmit)="login()" #loginForm="ngForm">
+        <span class="step">WELCOME BACK</span>
+        <h2>Sign in to Outplay</h2>
+        <p class="subtitle">Continue finding games worth replaying.</p>
 
-        <input
-          type="password"
-          name="password"
-          [(ngModel)]="credentials.password"
-          required
-          minlength="6"
-          autocomplete="current-password"
-          placeholder="Contraseña"
-        />
+        <label>
+          <span>Email address</span>
+          <div class="input-wrap">
+            <ion-icon name="mail"></ion-icon>
+            <input type="email" name="email" [(ngModel)]="credentials.email" required autocomplete="email" placeholder="you@example.com" />
+          </div>
+        </label>
 
-        <p class="error-message" *ngIf="errorMessage">
-          {{ errorMessage }}
-        </p>
+        <label>
+          <span>Password</span>
+          <div class="input-wrap">
+            <ion-icon name="lock-closed"></ion-icon>
+            <input type="password" name="password" [(ngModel)]="credentials.password" required minlength="6" autocomplete="current-password" placeholder="At least 6 characters" />
+          </div>
+        </label>
 
-        <button
-          type="submit"
-          class="action-button"
-          [disabled]="loginForm.invalid || loading">
-          {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
+        @if (registered) { <p class="message success">Account created. You can sign in now.</p> }
+        @if (errorMessage) { <p class="message error">{{ errorMessage }}</p> }
+
+        <button class="submit" type="submit" [disabled]="loginForm.invalid || loading">
+          <span>{{ loading ? 'Signing in…' : 'Sign in' }}</span><ion-icon name="arrow-forward"></ion-icon>
         </button>
-      </fieldset>
-    </form>
-  </div>
+
+        <p class="switch">New to Outplay? <a routerLink="/register">Create an account</a></p>
+      </form>
+    </section>
+  </main>
 </ion-content>

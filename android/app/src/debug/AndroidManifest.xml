@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The local PHP API uses HTTP. Keep this override limited to debug builds. -->
+    <application android:usesCleartextTraffic="true" />
+</manifest>

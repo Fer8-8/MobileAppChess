@@ -1,1 +1,14 @@
+ion-tab-bar {
+  --background: #111a18;
+  --border: rgba(255, 255, 255, .1);
+  height: 64px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
+ion-tab-button {
+  --color: #7f8b85;
+  --color-selected: #dfff4f;
+  font-size: 10px;
+}
+
+ion-icon { font-size: 19px; }

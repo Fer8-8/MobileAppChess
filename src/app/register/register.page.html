@@ -1,0 +1,48 @@
+<ion-content [fullscreen]="true">
+  <main class="auth-shell">
+    <section class="brand-panel">
+      <a class="brand" routerLink="/login" aria-label="Outplay"><span>♞</span> OUTPLAY</a>
+      <div class="brand-copy">
+        <p class="eyebrow">JOIN THE SEARCH</p>
+        <h1>Find the game<br><em>nobody expected.</em></h1>
+        <p>Create an account to explore remarkable wins from Olympiads and major chess events.</p>
+      </div>
+      <div class="board-art" aria-hidden="true"><span>♛</span></div>
+      <p class="source-note"><i></i> Free access · Major events · Original games</p>
+    </section>
+
+    <section class="form-panel">
+      <form class="auth-form" (ngSubmit)="register()" #registerForm="ngForm">
+        <span class="step">CREATE ACCOUNT</span>
+        <h2>Join Outplay</h2>
+        <p class="subtitle">Your next remarkable game is waiting.</p>
+
+        <label>
+          <span>Full name</span>
+          <div class="input-wrap"><ion-icon name="person"></ion-icon><input type="text" name="name" [(ngModel)]="account.name" required minlength="2" autocomplete="name" placeholder="Your name" /></div>
+        </label>
+        <label>
+          <span>Email address</span>
+          <div class="input-wrap"><ion-icon name="mail"></ion-icon><input type="email" name="email" [(ngModel)]="account.email" required email autocomplete="email" placeholder="you@example.com" /></div>
+        </label>
+        <div class="password-grid">
+          <label>
+            <span>Password</span>
+            <div class="input-wrap"><ion-icon name="lock-closed"></ion-icon><input type="password" name="password" [(ngModel)]="account.password" required minlength="6" autocomplete="new-password" placeholder="6+ characters" /></div>
+          </label>
+          <label>
+            <span>Confirm password</span>
+            <div class="input-wrap"><ion-icon name="lock-closed"></ion-icon><input type="password" name="confirmPassword" [(ngModel)]="account.confirmPassword" required minlength="6" autocomplete="new-password" placeholder="Repeat it" /></div>
+          </label>
+        </div>
+
+        @if (errorMessage) { <p class="message error">{{ errorMessage }}</p> }
+
+        <button class="submit" type="submit" [disabled]="registerForm.invalid || loading">
+          <span>{{ loading ? 'Creating account…' : 'Create account' }}</span><ion-icon name="arrow-forward"></ion-icon>
+        </button>
+        <p class="switch">Already have an account? <a routerLink="/login">Sign in</a></p>
+      </form>
+    </section>
+  </main>
+</ion-content>

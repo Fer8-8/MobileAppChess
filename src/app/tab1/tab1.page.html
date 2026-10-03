@@ -1,153 +1,71 @@
-<form id="msform">
+<ion-content [fullscreen]="true">
+  <main class="home-shell">
+    <header class="topbar">
+      <a class="brand" routerLink="/tabs/tab1" aria-label="Outplay home">
+        <span class="brand-mark">♞</span><span>OUTPLAY</span>
+      </a>
+      <nav class="topbar-actions" aria-label="Account and navigation">
+        @if (user) {
+          <span class="welcome">Hi, {{ user.name }}</span>
+        }
+        <a class="discover-link" routerLink="/tabs/tab2">Explore games <ion-icon name="arrow-forward"></ion-icon></a>
+        <button class="logout-button" type="button" (click)="logout()" aria-label="Log out">
+          <ion-icon name="log-out-outline"></ion-icon><span>Log out</span>
+        </button>
+      </nav>
+    </header>
 
-  <ul id="progressbar">
-    <li [class.active]="currentStep >= 0">
-      Account Setup
-    </li>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> Curated from major chess events</div>
+        <h1>Great chess<br><em>hides in the upset.</em></h1>
+        <p>Skip the predictable results. Discover the boldest wins from major tournaments, ranked by the rating gap nobody expected them to overcome.</p>
+        <div class="hero-actions">
+          <a class="primary-cta" routerLink="/tabs/tab2">Find an upset <ion-icon name="arrow-forward"></ion-icon></a>
+          <span class="api-note"><span class="pulse"></span> Powered by Lichess broadcasts</span>
+        </div>
+      </div>
 
-    <li [class.active]="currentStep >= 1">
-      Social Profiles
-    </li>
+      <div class="hero-visual" aria-label="Featured Chess Olympiad upset">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="event-stamp">SAMARKAND<br><strong>2026</strong></div>
+        <div class="chess-piece">♞</div>
+        <article class="floating-card">
+          <div class="card-topline"><span>LATEST OLYMPIAD</span><strong>9 FEEDS</strong></div>
+          <div class="mini-player winner"><span class="avatar lime">O</span><div><strong>Open section</strong><small>All boards · 11 rounds</small></div><b>5</b></div>
+          <div class="mini-player"><span class="avatar">W</span><div><strong>Women's section</strong><small>All boards · 11 rounds</small></div><b>4</b></div>
+        </article>
+      </div>
+    </section>
 
-    <li [class.active]="currentStep >= 2">
-      Personal Details
-    </li>
-  </ul>
+    <section class="featured-event">
+      <div class="section-heading">
+        <div><span class="kicker">NOW FEATURED</span><h2>46th FIDE Chess Olympiad</h2></div>
+        <a routerLink="/tabs/tab2">See all upsets <ion-icon name="arrow-forward"></ion-icon></a>
+      </div>
+      <div class="event-card">
+        <div class="board-pattern" aria-hidden="true"><span>♜</span></div>
+        <div class="event-copy">
+          <div class="event-meta"><span>FIDE TEAM EVENT</span><span>11 ROUNDS</span></div>
+          <h3>Every upset from<br>Samarkand, in one place.</h3>
+          <p>Open & Women's sections · Sep 16–27, 2026</p>
+          <div class="event-stats">
+            <div><strong>2</strong><span>sections</span></div>
+            <div><strong>9</strong><span>broadcasts</span></div>
+            <div><strong>11</strong><span>rounds</span></div>
+          </div>
+        </div>
+        <a class="event-button" routerLink="/tabs/tab2" aria-label="Open the Olympiad games"><ion-icon name="arrow-forward"></ion-icon></a>
+      </div>
+    </section>
 
-
-  <!-- STEP 1 -->
-  <fieldset #fieldset>
-
-    <h2 class="fs-title">
-      Create your account
-    </h2>
-
-    <h3 class="fs-subtitle">
-      This is step 1
-    </h3>
-
-    <input
-      type="text"
-      name="email"
-      placeholder="Email"
-    />
-
-    <input
-      type="password"
-      name="pass"
-      placeholder="Password"
-    />
-
-    <input
-      type="password"
-      name="cpass"
-      placeholder="Confirm Password"
-    />
-
-    <input
-      type="button"
-      class="next action-button"
-      value="Next"
-      (click)="next()"
-    />
-
-  </fieldset>
-
-
-  <!-- STEP 2 -->
-  <fieldset #fieldset>
-
-    <h2 class="fs-title">
-      Social Profiles
-    </h2>
-
-    <h3 class="fs-subtitle">
-      Your presence on the social network
-    </h3>
-
-    <input
-      type="text"
-      name="twitter"
-      placeholder="Twitter"
-    />
-
-    <input
-      type="text"
-      name="facebook"
-      placeholder="Facebook"
-    />
-
-    <input
-      type="text"
-      name="gplus"
-      placeholder="Google Plus"
-    />
-
-    <input
-      type="button"
-      class="previous action-button"
-      value="Previous"
-      (click)="previous()"
-    />
-
-    <input
-      type="button"
-      class="next action-button"
-      value="Next"
-      (click)="next()"
-    />
-
-  </fieldset>
-
-
-  <!-- STEP 3 -->
-  <fieldset #fieldset>
-
-    <h2 class="fs-title">
-      Personal Details
-    </h2>
-
-    <h3 class="fs-subtitle">
-      We will never sell it
-    </h3>
-
-    <input
-      type="text"
-      name="fname"
-      placeholder="First Name"
-    />
-
-    <input
-      type="text"
-      name="lname"
-      placeholder="Last Name"
-    />
-
-    <input
-      type="text"
-      name="phone"
-      placeholder="Phone"
-    />
-
-    <textarea
-      name="address"
-      placeholder="Address">
-    </textarea>
-
-    <input
-      type="button"
-      class="previous action-button"
-      value="Previous"
-      (click)="previous()"
-    />
-
-    <a
-      href="https://twitter.com/GoktepeAtakan"
-      class="submit action-button"
-      target="_top">
-      Submit
-    </a>
-
-  </fieldset>
-
-</form>
+    <section class="why-section">
+      <div><span class="kicker">WHY OUTPLAY</span><h2>The result is only<br>the beginning.</h2></div>
+      <div class="why-grid">
+        <article><ion-icon name="trending-up"></ion-icon><h3>Gap, not hype</h3><p>Games are ordered by the Elo difference the winner had to overcome.</p></article>
+        <article><ion-icon name="flash"></ion-icon><h3>Straight to the board</h3><p>One tap opens the original game inside the Lichess broadcast.</p></article>
+        <article><ion-icon name="trophy"></ion-icon><h3>Events that matter</h3><p>Olympiads, Candidates, elite opens and the tournaments shaping chess.</p></article>
+      </div>
+    </section>
+  </main>
+</ion-content>

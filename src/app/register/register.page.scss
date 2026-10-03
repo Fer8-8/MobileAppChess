@@ -1,0 +1,5 @@
+@use '../login/login.page.scss';
+
+.auth-form { width:min(490px,100%); }
+.password-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+@media(max-width:520px){.password-grid{grid-template-columns:1fr;gap:0}}

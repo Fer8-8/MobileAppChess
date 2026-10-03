@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { Router, RouterLink } from '@angular/router';
+import { IonContent, IonIcon } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { arrowForward, lockClosed, mail } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -10,9 +11,11 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonContent, IonIcon, FormsModule, RouterLink],
 })
 export class LoginPage {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   credentials = {
     email: '',
     password: '',
@@ -20,11 +23,12 @@ export class LoginPage {
 
   loading = false;
   errorMessage = '';
+  registered = false;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor() {
+    addIcons({ arrowForward, lockClosed, mail });
+    this.registered = history.state?.registered === true;
+  }
 
   login(): void {
     if (!this.credentials.email || !this.credentials.password) {
@@ -33,6 +37,7 @@ export class LoginPage {
 
     this.loading = true;
     this.errorMessage = '';
+    this.registered = false;
 
     this.authService.login(
       this.credentials.email,

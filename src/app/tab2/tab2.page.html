@@ -1,31 +1,110 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title> Photo Gallery </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Photo Gallery</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <main class="games-shell">
+    <header class="topbar">
+      <a class="brand" routerLink="/tabs/tab1"><span class="brand-mark">♞</span><span>OUTPLAY</span></a>
+      <a class="back-link" routerLink="/tabs/tab1"><ion-icon name="arrow-back"></ion-icon> Back to home</a>
+    </header>
 
-  <ion-grid>
-    <ion-row>
-      @for (photo of photoService.photos(); track photo.filepath; let position = $index) {
-      <ion-col size="6">
-        <button (click)="showActionSheet(photo, position)">
-          <img [src]="photo.webviewPath" [attr.alt]="'Photo ' + (position + 1)" loading="lazy" />
-        </button>
-      </ion-col>
+    <section class="page-intro">
+      <div class="intro-copy">
+        <span class="kicker">GAME FINDER / 01</span>
+        <h1>Find the games<br><em>worth replaying.</em></h1>
+        <p>Choose an event, then explore its biggest rating upsets. The most unlikely win always rises to the top.</p>
+      </div>
+      <div class="selector-wrap">
+        <label for="event-select">SELECT TOURNAMENT</label>
+        <div class="event-select">
+          <div class="event-symbol">♜</div>
+          <div><strong>{{ selectedEvent().name }}</strong><span>{{ selectedEvent().place }} · {{ selectedEvent().date }}</span></div>
+          <ion-icon name="chevron-down"></ion-icon>
+          <select id="event-select" [ngModel]="selectedEventId()" (ngModelChange)="selectEvent($event)" aria-label="Tournament">
+            @for (event of events; track event.id) { <option [value]="event.id" [disabled]="event.status === 'soon'">{{ event.name }}{{ event.status === 'soon' ? ' — coming soon' : '' }}</option> }
+          </select>
+        </div>
+        <small [class.error]="loadError()">
+          <span></span>
+          @if (loading()) {
+            Combining Lichess broadcasts…
+          } @else if (loadError()) {
+            {{ loadError() }}
+          } @else {
+            {{ broadcastCount() }} broadcasts combined{{ isCached() ? ' · cached' : '' }}
+          }
+        </small>
+      </div>
+    </section>
+
+    <section class="results-panel">
+      <div class="results-head">
+        <div>
+          <span class="kicker">RANKED BY RATING GAP</span>
+          <h2>The biggest upsets</h2>
+        </div>
+        <div class="filter-stack">
+          <div class="filters" role="group" aria-label="Event section">
+            <button [class.active]="section() === 'all'" (click)="setSection('all')">All</button>
+            <button [class.active]="section() === 'open'" (click)="setSection('open')">Open</button>
+            <button [class.active]="section() === 'women'" (click)="setSection('women')">Women</button>
+          </div>
+          <label class="round-filter">
+            <span>Round</span>
+            <select [ngModel]="round()" (ngModelChange)="setRound($event)">
+              <option value="all">All rounds</option>
+              @for (roundNumber of rounds; track roundNumber) {
+                <option [value]="roundNumber">Round {{ roundNumber }}</option>
+              }
+            </select>
+            <ion-icon name="chevron-down"></ion-icon>
+          </label>
+          <label class="exclude-filter">
+            <input
+              type="checkbox"
+              [ngModel]="ratingMode() === 'rated'"
+              (ngModelChange)="setExcludeUnrated($event)"
+            />
+            <span class="checkmark">✓</span>
+            <span>Exclude unrated players</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="list-labels"><span>RANK</span><span>GAME</span><span>THE GAP</span><span></span></div>
+      <div class="game-list">
+        @for (game of games(); track game.id; let rank = $index) {
+          <article class="game-row" [class.top-game]="rank === 0">
+            <div class="rank"><span>#</span>{{ (rank + 1).toString().padStart(2, '0') }}</div>
+            <div class="matchup">
+              <div class="player winner">
+                <span class="avatar">{{ initials(game.winner.name) }}</span>
+                <div><strong>@if (game.winner.title) { <i>{{ game.winner.title }}</i> } {{ game.winner.name }}</strong><small>{{ game.winner.country }} · {{ ratingLabel(game.winner.rating) }} <b>WINNER</b></small></div>
+                <span class="piece" [class.black]="game.winner.color === 'black'">{{ game.winner.color === 'white' ? '♙' : '♟' }}</span>
+              </div>
+              <div class="player">
+                <span class="avatar muted">{{ initials(game.opponent.name) }}</span>
+                <div><strong>@if (game.opponent.title) { <i>{{ game.opponent.title }}</i> } {{ game.opponent.name }}</strong><small>{{ game.opponent.country }} · {{ ratingLabel(game.opponent.rating) }}</small></div>
+                <span class="piece" [class.black]="game.opponent.color === 'black'">{{ game.opponent.color === 'white' ? '♙' : '♟' }}</span>
+              </div>
+              <div class="game-meta">Round {{ game.round }} · {{ game.section === 'women' ? "Women's" : 'Open' }} · {{ game.opening }}</div>
+            </div>
+            <div class="gap">
+              @if (game.isUnrated) {
+                <strong class="unrated-gap">UNR</strong><span>PLAYER</span>
+              } @else {
+                <strong>+{{ ratingGap(game) }}</strong><span>ELO</span>
+              }
+            </div>
+            <a class="watch" [href]="game.lichessUrl" target="_blank" rel="noopener" aria-label="Watch game on Lichess"><span>Watch game</span><ion-icon name="arrow-forward"></ion-icon></a>
+          </article>
+        }
+      </div>
+      @if (!loading() && games().length === 0) {
+        <div class="empty-state"><span>♙</span><strong>No games match these filters</strong><p>Try another round, section, or rating mode.</p></div>
       }
-    </ion-row>
-  </ion-grid>
-
-  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button (click)="addPhotoToGallery()">
-      <ion-icon name="camera"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+      <div class="results-foot">
+        <ion-icon name="swap-vertical"></ion-icon>
+        Showing {{ games().length }} decisive {{ games().length === 1 ? 'game' : 'games' }}
+        · {{ ratingMode() === 'rated' ? 'unrated players excluded' : 'unrated players included' }}
+      </div>
+    </section>
+  </main>
 </ion-content>
