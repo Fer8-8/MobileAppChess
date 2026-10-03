@@ -1,39 +1,189 @@
-# Build Your First Ionic App: Photo Gallery (Ionic Angular and Capacitor)
+# Outplay
 
-Get started with Ionic by building a photo gallery app that runs on iOS, Android, and the web - with just one codebase. This is the complete project referenced in the ["Your First App: Angular" guide](https://ionicframework.com/docs/angular/your-first-app). Follow along to create a complete CRUD (create-read-update-delete) experience.
+Outplay is an Ionic and Angular app for discovering the biggest rating upsets from major chess tournaments. It combines Lichess broadcast data, ranks decisive games by Elo gap, and links directly to the original games.
 
-Powered by [Ionic Angular](https://ionicframework.com/docs/angular/overview) (web app) and [Capacitor](https://capacitor.ionicframework.com) (native app runtime).
+The same codebase runs in a browser and as an Android or iOS app through Capacitor.
 
-## How It Works
+## Features
 
-After the user navigates to Tab 2 (Photos), they can tap/click on the camera button to open up the device's camera. After taking or selecting a photo, it's stored permanently into the device's filesystem. When the user reopens the app at a later time, the photo images are loaded from the filesystem and displayed again in the gallery. The user can tap on a photo to be presented with the option to remove the photo.
+- Account registration and login with token-based authentication
+- Protected app routes and persistent sessions
+- Chess events from a PHP API backed by Lichess broadcasts
+- Filters for event section, round, and rated or unrated players
+- Games ranked by the rating gap between winner and opponent
+- Direct links to replay games on Lichess
+- Saved sample games when the backend is unavailable
+- Native Android and iOS projects powered by Capacitor
 
-## Feature Overview
-* App framework: [Angular](https://angular.io)
-* UI components: [Ionic Framework](https://ionicframework.com/docs/components)
-  * Camera button: [Floating Action Button (FAB)](https://ionicframework.com/docs/api/fab)
-  * Photo Gallery display: [Grid](https://ionicframework.com/docs/api/grid)
-  * Delete Photo dialog: [Action Sheet](https://ionicframework.com/docs/api/action-sheet) 
-* Native runtime: [Capacitor](https://capacitor.ionicframework.com)
-  * Taking photos: [Camera API](https://capacitor.ionicframework.com/docs/apis/camera)
-  * Writing photo to the filesystem: [Filesystem API](https://capacitor.ionicframework.com/docs/apis/filesystem)
-  * Storing photo gallery metadata: [Preferences API](https://capacitor.ionicframework.com/docs/apis/preferences)
+## Tech stack
 
-## Project Structure
-* Tab2 (Photos) (`src/app/tab2/`): Photo Gallery UI and basic logic.
-* PhotoService (`src/app/services/photo.service.ts`): Logic encapsulating Capacitor APIs, including Camera, Filesystem, and Preferences.
+- Angular 22
+- Ionic 9
+- Capacitor 8
+- TypeScript 6
+- RxJS
+- SCSS
+- Jasmine and Karma
+- ESLint
 
-## How to Run
+## Requirements
 
-> [!TIP]
-> It's highly recommended to follow along with the [tutorial guide](https://ionicframework.com/docs/angular/your-first-app), which goes into more depth, but this is the fastest way to run the app.
+- Node.js `^22.22.3`, `^24.15.0`, or `>=26.0.0`
+- npm
+- A compatible PHP API for authentication and chess data
+- Optional: Android Studio and the Android SDK for Android development
+- Optional: macOS with Xcode for iOS development
 
-> [!IMPORTANT]
-> Requires Node `^22.22.3 || ^24.15.0 || >=26.0.0` (Angular 22).
+The included `npm start` command expects XAMPP's PHP executable at `/opt/lampp/bin/php` and the API files under `/opt/lampp/htdocs`. If your PHP setup is elsewhere, start the API separately and use `npm run start:web` for the frontend.
 
-1) Install the Ionic CLI (if you haven't already): `npm install -g @ionic/cli`
-2) Clone the repository: `git clone https://github.com/ionic-team/tutorial-photo-gallery-angular`
-3) Navigate to the project directory: `cd tutorial-photo-gallery-angular`
-4) Install the project dependencies: `npm install`
-5) Run the app in your browser: `ionic serve`
-6) Run the app on iOS or Android: Follow the [Capacitor Workflow](https://capacitorjs.com/docs/basics/workflow) guide for instructions on building and running the app on a native platform.
+## Getting started
+
+1. Install dependencies:
+
+   ```bash
+   npm ci
+   ```
+
+2. Configure the API URL in the environment files:
+
+   ```text
+   src/environments/environment.ts
+   src/environments/environment.prod.ts
+   ```
+
+3. Start the app:
+
+   ```bash
+   npm start
+   ```
+
+   This launches the local PHP server at `http://127.0.0.1:8000` and the Angular development server. The PHP server log is written to `/tmp/outplay-php-api.log`.
+
+4. Open the URL printed by Angular, normally `http://localhost:4200`.
+
+To run only the web frontend:
+
+```bash
+npm run start:web
+```
+
+## Backend API
+
+Outplay expects `environment.apiUrl` to point to a PHP API with these endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/login.php` | Authenticate a user and return a token and user record |
+| `POST` | `/create_user.php` | Register a new user |
+| `GET` | `/chess/upsets.php` | Return decisive games and broadcast metadata |
+
+Authenticated requests include the token as an `Authorization: Bearer <token>` header.
+
+The development environment currently uses:
+
+```text
+http://127.0.0.1:8000/php-api
+```
+
+The production environment currently uses Android Emulator's host alias:
+
+```text
+http://10.0.2.2:8000/php-api
+```
+
+Before deploying, replace the production value with the HTTPS URL of the deployed API.
+
+### Device networking
+
+- Browser on the development computer: use `127.0.0.1` or `localhost`.
+- Android Emulator: use `10.0.2.2` to reach the host computer.
+- Physical Android or iOS device: use the development computer's LAN IP, such as `http://192.168.1.100:8000/php-api`. The device and computer must be on the same network, and the API must listen on `0.0.0.0`.
+
+To expose the included XAMPP API server to a device, run:
+
+```bash
+npm run api:android
+```
+
+## Available scripts
+
+| Command | Description |
+| --- | --- |
+| `npm start` | Start the XAMPP PHP API and Angular development server together |
+| `npm run start:web` | Start only the Angular development server |
+| `npm run api` | Start the PHP API on `127.0.0.1:8000` |
+| `npm run api:android` | Start the PHP API on `0.0.0.0:8000` for emulator or device access |
+| `npm run build` | Create a production web build in `www/` |
+| `npm run watch` | Rebuild continuously using the development configuration |
+| `npm test` | Run unit tests with Karma |
+| `npm run lint` | Lint TypeScript and HTML files |
+
+## Native development
+
+Build the web app and sync it to the native projects:
+
+```bash
+npm run build
+npx cap sync
+```
+
+Open a native project:
+
+```bash
+npx cap open android
+npx cap open ios
+```
+
+You can also run directly on a configured target:
+
+```bash
+npx cap run android
+npx cap run ios
+```
+
+iOS builds require macOS and Xcode.
+
+## Project structure
+
+```text
+src/app/
+├── guards/                 Route protection
+├── login/                  Login page
+├── register/               Account registration page
+├── services/
+│   ├── auth.service.ts     Authentication and session storage
+│   ├── auth.interceptor.ts Bearer-token HTTP interceptor
+│   ├── chess-events.service.ts
+│   └── photo.service.ts    Capacitor camera/filesystem service
+├── tab1/                   Outplay home page
+├── tab2/                   Chess event and upset explorer
+└── tabs/                   Tab shell and child routes
+
+src/environments/           Development and production API settings
+android/                    Capacitor Android project
+ios/                        Capacitor iOS project
+scripts/start-dev.sh        Combined PHP and Angular development launcher
+```
+
+## Troubleshooting
+
+### Login or registration fails
+
+Confirm that the PHP server is running, `environment.apiUrl` points to the correct host, and the API allows requests from the app's origin. Check `/tmp/outplay-php-api.log` when using `npm start`.
+
+### A phone cannot reach the API
+
+Do not use `localhost` from a physical device. Use the computer's LAN IP, run `npm run api:android`, and ensure the firewall permits inbound traffic on port `8000`.
+
+### Native changes do not appear
+
+Rebuild and sync the web assets:
+
+```bash
+npm run build
+npx cap sync
+```
+
+## License
+
+See [LICENSE](LICENSE).
