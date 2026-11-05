@@ -15,6 +15,10 @@ export const routes: Routes = [
         loadComponent: () => import('../tab2/tab2.page').then((m) => m.Tab2Page),
       },
       {
+        path: 'profile',
+        loadComponent: () => import('../profile/profile.page').then((m) => m.ProfilePage),
+      },
+      {
         path: '',
         redirectTo: '/tabs/tab1',
         pathMatch: 'full',

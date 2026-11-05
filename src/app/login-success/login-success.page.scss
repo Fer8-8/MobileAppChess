@@ -1,0 +1,42 @@
+:host { --ink:#111a18;--lime:#dfff4f;--paper:#f4f1e8;display:block; }
+ion-content { --background:var(--ink); }
+.success-shell { min-height:100%;position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(280px,.78fr) minmax(480px,1.22fr);grid-template-rows:1fr auto;align-items:center;gap:20px;padding:clamp(32px,6vw,86px);background:radial-gradient(circle at 74% 46%,rgba(223,255,79,.16),transparent 29%),linear-gradient(135deg,#111a18 0%,#111a18 62%,#17231f 100%);color:white; }
+.success-shell::before { content:'';position:absolute;inset:-60%;background:repeating-conic-gradient(from 0deg,transparent 0 8deg,rgba(223,255,79,.025) 8deg 9deg);animation:chaos-spin 16s linear infinite; }
+.sound-toggle { position:absolute;z-index:10;top:22px;right:22px;display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid rgba(223,255,79,.4);border-radius:99px;background:rgba(17,26,24,.72);color:var(--lime);font:800 9px/1 Arial,sans-serif;letter-spacing:.1em;cursor:pointer;backdrop-filter:blur(8px); }
+.sound-toggle:focus-visible { outline:2px solid white;outline-offset:3px; }
+.loader-copy { position:relative;z-index:3; }
+.kicker { margin:0 0 18px;color:var(--lime);font:800 10px/1 Arial,sans-serif;letter-spacing:.2em; }
+h1 { margin:0;font:700 clamp(54px,7vw,96px)/.86 Georgia,serif;letter-spacing:-.065em; }
+h1 em { color:var(--lime);font-weight:400; }
+.caption { max-width:390px;min-height:48px;margin:30px 0 0;color:#b8c2bc;font:600 clamp(13px,1.4vw,17px)/1.5 Arial,sans-serif; }
+.legends-stage { position:relative;z-index:2;height:min(57vw,560px);min-height:390px;filter:drop-shadow(0 28px 28px rgba(0,0,0,.32)); }
+.player { position:absolute;bottom:0;width:42%;height:83%;background-image:url('/assets/images/chess-legends-loader.png');background-repeat:no-repeat;background-size:300% 100%;will-change:transform; }
+.player-magnus { left:-1%;background-position:left center;animation:float-magnus .68s ease-in-out infinite alternate; }
+.player-hikaru { left:29%;z-index:3;background-position:center center;animation:float-hikaru .52s ease-in-out infinite alternate; }
+.player-kasparov { right:-1%;background-position:right center;animation:float-kasparov .74s ease-in-out infinite alternate; }
+.name-tag { position:absolute;z-index:5;padding:8px 11px;border:2px solid var(--ink);background:var(--lime);color:var(--ink);font:900 9px/1 Arial,sans-serif;letter-spacing:.08em;box-shadow:5px 5px 0 rgba(0,0,0,.42);animation:tag-jitter .24s steps(2,end) infinite; }
+.tag-magnus { left:3%;bottom:8%;transform:rotate(-6deg); }
+.tag-hikaru { left:38%;top:8%;max-width:150px;font-size:10px;line-height:1.25;text-align:center;transform:rotate(4deg);animation-delay:.08s; }
+.tag-hikaru::after { content:'';position:absolute;left:38%;bottom:-11px;border:6px solid transparent;border-top-color:var(--lime);transform:rotate(8deg); }
+.tag-kasparov { right:2%;bottom:5%;transform:rotate(5deg);animation-delay:.15s; }
+.progress-wrap { position:relative;z-index:4;grid-column:1/-1; }
+.progress-track { height:12px;overflow:hidden;border:1px solid rgba(223,255,79,.42);border-radius:99px;background:rgba(255,255,255,.05); }
+.progress-track span { display:block;width:100%;height:100%;border-radius:inherit;background:var(--lime);transform-origin:left;animation:progress 8s cubic-bezier(.21,.8,.25,1) both; }
+.progress-labels { display:flex;justify-content:space-between;margin-top:10px;color:#718078;font:800 8px/1 Arial,sans-serif;letter-spacing:.15em; }
+.orbit-piece { position:absolute;z-index:1;color:var(--lime);font-family:Georgia,serif;opacity:.22; }
+.piece-one { left:4%;top:5%;font-size:90px;animation:piece-tumble 1.7s ease-in-out infinite alternate; }
+.piece-two { right:3%;top:1%;font-size:76px;animation:piece-tumble 1.25s ease-in-out -.4s infinite alternate-reverse; }
+.piece-three { left:44%;bottom:4%;font-size:58px;animation:piece-tumble 1s ease-in-out -.2s infinite alternate; }
+.speed-streak { position:absolute;z-index:1;height:3px;border-radius:10px;background:var(--lime);opacity:.35;animation:streak .7s ease-out infinite; }
+.streak-one { top:30%;left:35%;width:110px; }
+.streak-two { top:66%;left:8%;width:70px;animation-delay:.22s; }
+@keyframes float-magnus { from { transform:translate(-7px,7px) rotate(-3deg); } to { transform:translate(5px,-6px) rotate(1deg); } }
+@keyframes float-hikaru { from { transform:translateY(6px) rotate(2deg) scale(1.01); } to { transform:translateY(-9px) rotate(-2deg) scale(1.04); } }
+@keyframes float-kasparov { from { transform:translate(5px,5px) rotate(3deg); } to { transform:translate(-4px,-5px) rotate(-1deg); } }
+@keyframes tag-jitter { 0% { margin:0; } 50% { margin:-2px 0 0 2px; } 100% { margin:1px 0 0 -1px; } }
+@keyframes piece-tumble { from { transform:translateY(-8px) rotate(-12deg); } to { transform:translateY(14px) rotate(15deg); } }
+@keyframes streak { 0% { transform:translateX(90px) scaleX(.1);opacity:0; } 40% { opacity:.4; } 100% { transform:translateX(-110px) scaleX(1);opacity:0; } }
+@keyframes chaos-spin { to { transform:rotate(360deg); } }
+@keyframes progress { 0% { transform:scaleX(.02); } 55% { transform:scaleX(.58); } 72% { transform:scaleX(.93); } 88% { transform:scaleX(.78); } 100% { transform:scaleX(1); } }
+@media(max-width:800px){.success-shell{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;gap:0;padding:28px 22px}.loader-copy{text-align:center}.kicker{margin-bottom:12px}h1{font-size:clamp(47px,14vw,70px)}.caption{min-height:40px;margin:16px auto 0}.legends-stage{height:48vh;min-height:310px;margin:0 -18px}.name-tag{font-size:7px}.progress-wrap{grid-column:1}.piece-one{font-size:55px}.piece-two{font-size:48px}}
+@media(prefers-reduced-motion:reduce){.success-shell::before,.player,.name-tag,.orbit-piece,.speed-streak,.progress-track span{animation:none}.progress-track span{transform:scaleX(1)}}

@@ -1,0 +1,33 @@
+<ion-content [fullscreen]="true">
+  <main class="success-shell" role="status" aria-live="polite">
+    <button class="sound-toggle" type="button" (click)="toggleSound()" [attr.aria-label]="soundMuted ? 'Turn sound on' : 'Turn sound off'">
+      <span aria-hidden="true">{{ soundMuted ? '🔇' : '🔊' }}</span>
+      {{ soundMuted ? 'SOUND OFF' : 'SOUND ON' }}
+    </button>
+    <span class="orbit-piece piece-one" aria-hidden="true">♞</span>
+    <span class="orbit-piece piece-two" aria-hidden="true">♜</span>
+    <span class="orbit-piece piece-three" aria-hidden="true">♟</span>
+    <span class="speed-streak streak-one" aria-hidden="true"></span>
+    <span class="speed-streak streak-two" aria-hidden="true"></span>
+
+    <section class="loader-copy">
+      <p class="kicker">ACCESS GRANTED · CHAOS PENDING</p>
+      <h1>Hold on to<br><em>your pawns.</em></h1>
+      <p class="caption">{{ caption }}</p>
+    </section>
+
+    <section class="legends-stage" aria-label="Illustrations of Magnus Carlsen, Hikaru Nakamura, and Garry Kasparov waiting impatiently">
+      <div class="player player-magnus" role="img" aria-label="Magnus Carlsen"></div>
+      <div class="player player-hikaru" role="img" aria-label="Hikaru Nakamura"></div>
+      <div class="player player-kasparov" role="img" aria-label="Garry Kasparov"></div>
+      <span class="name-tag tag-magnus">MAGNUS: waiting</span>
+      <span class="name-tag tag-hikaru">HIKARU: “I LITERALLY DON'T CARE.”</span>
+      <span class="name-tag tag-kasparov">GARRY: judging</span>
+    </section>
+
+    <section class="progress-wrap" aria-label="Preparing your dashboard">
+      <div class="progress-track" aria-hidden="true"><span></span></div>
+      <div class="progress-labels"><span>CALCULATING VIBES</span><span>100% REAL THEORY</span></div>
+    </section>
+  </main>
+</ion-content>

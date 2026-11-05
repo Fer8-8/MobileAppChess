@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { arrowForward, flash, logOutOutline, trophy, trendingUp } from 'ionicons/icons';
-import { AuthService } from '../services/auth.service';
+import { AuthService, AuthUser } from '../services/auth.service';
 
 @Component({
   selector: 'app-tab1',
@@ -14,10 +14,14 @@ import { AuthService } from '../services/auth.service';
 export class Tab1Page {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  readonly user = this.authService.getUser();
+  user: AuthUser | null = this.authService.getUser();
 
   constructor() {
     addIcons({ arrowForward, flash, logOutOutline, trophy, trendingUp });
+  }
+
+  ionViewWillEnter(): void {
+    this.user = this.authService.getUser();
   }
 
   logout(): void {

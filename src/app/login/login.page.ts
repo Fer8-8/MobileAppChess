@@ -1,3 +1,4 @@
+import { networkErrorMessage } from '../services/network-error';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -5,6 +6,7 @@ import { IonContent, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { arrowForward, lockClosed, mail } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
+import { SuccessSoundService } from '../services/success-sound.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +17,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginPage {
   private readonly authService = inject(AuthService);
+  private readonly successSound = inject(SuccessSoundService);
   private readonly router = inject(Router);
   credentials = {
     email: '',
@@ -35,6 +38,7 @@ export class LoginPage {
       return;
     }
 
+    this.successSound.unlock();
     this.loading = true;
     this.errorMessage = '';
     this.registered = false;
@@ -45,12 +49,12 @@ export class LoginPage {
     ).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/tabs']);
+        void this.router.navigate(['/login-success']);
       },
       error: (error) => {
         this.loading = false;
         this.errorMessage =
-          error?.error?.message || 'Correo o contraseña incorrectos.';
+          networkErrorMessage(error, 'Correo o contraseña incorrectos.');
       },
     });
   }

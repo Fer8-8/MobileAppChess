@@ -1,3 +1,17 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <div class="connection-status" [class.offline]="!online()" role="status" aria-live="polite" aria-atomic="true">
+    <span class="status-dot" aria-hidden="true"></span>
+    <span>{{ online() ? 'Online' : 'Offline' }}</span>
+    @if (!online()) {
+      <span class="status-detail">Check your internet connection</span>
+    }
+    @if (auth.syncing()) {
+      <span class="status-detail">· Sincronizando perfil…</span>
+    } @else if (auth.pending()) {
+      <span class="status-detail">· Perfil pendiente de sincronización</span>
+    }
+  </div>
+  <div class="page-container">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
 </ion-app>

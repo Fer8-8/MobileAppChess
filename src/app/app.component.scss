@@ -1,0 +1,49 @@
+ion-app {
+  display: flex;
+  flex-direction: column;
+}
+
+.connection-status {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 16px 8px;
+  background: #172a22;
+  color: #b9eecb;
+  border-bottom: 1px solid #304a3b;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.offline {
+  background: #33291a;
+  color: #ffcf80;
+  border-color: #655030;
+
+  .status-dot {
+    background: transparent;
+    border: 2px solid currentColor;
+  }
+}
+
+.status-detail {
+  font-weight: 400;
+}
+
+.page-container {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+}

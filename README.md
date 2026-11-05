@@ -8,6 +8,8 @@ The same codebase runs in a browser and as an Android or iOS app through Capacit
 
 - Account registration and login with token-based authentication
 - Protected app routes and persistent sessions
+- Authenticated profile editing with an optional password change
+- Device-only profile photo storage with EXIF metadata display through `exifr`
 - Chess events from a PHP API backed by Lichess broadcasts
 - Filters for event section, round, and rated or unrated players
 - Games ranked by the rating gap between winner and opponent
@@ -75,9 +77,14 @@ Outplay expects `environment.apiUrl` to point to a PHP API with these endpoints:
 | --- | --- | --- |
 | `POST` | `/login.php` | Authenticate a user and return a token and user record |
 | `POST` | `/create_user.php` | Register a new user |
+| `GET` | `/profile.php` | Return the authenticated user's profile |
+| `PUT` | `/profile.php` | Update the authenticated user's name, email, and optional password |
+| `DELETE` | `/profile.php` | Delete the authenticated account and revoke its sessions |
 | `GET` | `/chess/upsets.php` | Return decisive games and broadcast metadata |
 
 Authenticated requests include the token as an `Authorization: Bearer <token>` header.
+
+Profile images are intentionally not sent to the PHP API. Capacitor stores each image in the app's local data directory and keeps its file reference and parsed EXIF fields in Preferences, scoped by user ID.
 
 The development environment currently uses:
 
@@ -187,3 +194,24 @@ npx cap sync
 ## License
 
 See [LICENSE](LICENSE).
+
+### Persistencia y sincronización offline
+
+Las partidas descargadas se conservan por filtros y el perfil mantiene cambios pendientes de nombre/correo por usuario. Al reconectar se refrescan partidas y se envían pendientes; los errores temporales se reintentan con la app abierta. Consulta la [guía de entrega y pruebas](docs/sincronizacion.md) y el [diagrama del proceso](docs/sincronizacion.svg).
+
+### Verificación de los ocho requisitos
+
+| Requisito | Implementación en la app |
+| --- | --- |
+| Cliente-servidor | Ionic/Angular consume el servidor PHP y su base MySQL mediante HTTP. |
+| API REST | Peticiones JSON con POST, GET, PUT y DELETE; autenticación Bearer y códigos HTTP. |
+| CRUD remoto | Crear cuenta en Registro; consultar, editar y eliminar la cuenta propia en Perfil. DELETE requiere conexión y confirmación explícita. |
+| Persistencia local | Sesión, caché de partidas por filtros y cambios pendientes en localStorage; foto en Filesystem/Preferences. |
+| Sincronización | Cola de nombre/correo por usuario, envío al reconectar y reintentos cada 30 segundos con la app abierta; actualización de partidas. Los conflictos requieren corrección o reintento manual. |
+| Errores de red | Tiempos límite, mensajes de conexión/servidor, recuperación de caché y conservación de cambios pendientes. |
+| Multimedia | Foto desde cámara/galería, visualización y datos EXIF; sonido de bienvenida. |
+| Interfaz funcional | Registro, acceso, navegación, filtros de partidas, perfil, estados de carga y confirmación/cancelación de borrado. |
+
+Para demostrar el CRUD usa una cuenta de prueba: regístrala, abre Perfil, modifica el nombre y vuelve a entrar para comprobarlo. Desconecta la red, guarda otra edición, recarga y reconecta para comprobar la sincronización. Finalmente elimina esa cuenta desde Perfil y verifica que ya no puede iniciar sesión. No se encolan contraseñas ni eliminaciones offline. El borrado elimina únicamente la cuenta autenticada, sus tokens y sus pendientes locales; las partidas públicas en caché permanecen disponibles.
+
+El backend se encuentra fuera de este repositorio, en `/opt/lampp/htdocs/php-api`: despliega también los cambios de `config.php` y `profile.php` para habilitar DELETE.

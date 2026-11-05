@@ -31,6 +31,13 @@
             {{ broadcastCount() }} broadcasts combined{{ isCached() ? ' · cached' : '' }}
           }
         </small>
+        @if (savedAt()) {
+          <p>Saved on this device: {{ savedAt() | date:'short' }}</p>
+        }
+        <button type="button" (click)="refresh()" [disabled]="!online() || loading()">Refresh games</button>
+        @if (!online()) {
+          <p>Saved games are available below. Watching on Lichess requires Internet.</p>
+        }
       </div>
     </section>
 
@@ -93,7 +100,7 @@
                 <strong>+{{ ratingGap(game) }}</strong><span>ELO</span>
               }
             </div>
-            <a class="watch" [href]="game.lichessUrl" target="_blank" rel="noopener" aria-label="Watch game on Lichess"><span>Watch game</span><ion-icon name="arrow-forward"></ion-icon></a>
+            <a class="watch" [attr.href]="online() ? game.lichessUrl : null" [attr.aria-disabled]="!online()" [attr.tabindex]="online() ? null : -1" target="_blank" rel="noopener" aria-label="Watch game on Lichess"><span>{{ online() ? 'Watch game' : 'Offline' }}</span><ion-icon name="arrow-forward"></ion-icon></a>
           </article>
         }
       </div>

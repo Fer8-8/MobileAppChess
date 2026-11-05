@@ -5,12 +5,14 @@ import { IonContent, IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { arrowBack, arrowForward, chevronDown, openOutline, swapVertical } from 'ionicons/icons';
 import { ChessEventsService, EventSection, RatingMode, UpsetGame } from '../services/chess-events.service';
+import { ConnectivityService } from '../services/connectivity.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [IonContent, IonIcon, FormsModule, RouterLink],
+  imports: [IonContent, IonIcon, FormsModule, RouterLink, DatePipe],
 })
 export class Tab2Page implements OnInit {
   private readonly chessEvents = inject(ChessEventsService);
@@ -23,10 +25,12 @@ export class Tab2Page implements OnInit {
   readonly loadError = this.chessEvents.loadError;
   readonly broadcastCount = this.chessEvents.broadcastCount;
   readonly isCached = this.chessEvents.isCached;
+  readonly savedAt = this.chessEvents.savedAt;
+  readonly online = inject(ConnectivityService).online;
   readonly selectedEventId = signal('samarkand-2026');
   readonly selectedEvent = computed(() => this.events.find(event => event.id === this.selectedEventId()) ?? this.events[0]);
   readonly games = computed(() => {
-    return this.chessEvents.games()
+    return [...this.chessEvents.games()]
       .sort((a, b) => this.ratingGap(b) - this.ratingGap(a));
   });
 
@@ -51,6 +55,9 @@ export class Tab2Page implements OnInit {
   }
   loadGames(): void {
     this.chessEvents.loadUpsets(this.selectedEventId(), this.section(), this.round(), this.ratingMode());
+  }
+  refresh(): void {
+    this.chessEvents.loadUpsets(this.selectedEventId(), this.section(), this.round(), this.ratingMode(), true);
   }
   ratingGap(game: UpsetGame): number {
     return game.ratingGap ?? (game.opponent.rating ?? 0) - (game.winner.rating ?? 0);

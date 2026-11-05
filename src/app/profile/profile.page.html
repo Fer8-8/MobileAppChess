@@ -1,0 +1,106 @@
+<ion-content [fullscreen]="true">
+  <main class="profile-shell">
+    <header class="topbar">
+      <a class="brand" routerLink="/tabs/tab1" aria-label="Outplay home"><span>♞</span> OUTPLAY</a>
+      <button class="logout" type="button" (click)="logout()" [disabled]="deleting()"><ion-icon name="log-out-outline"></ion-icon> Salir</button>
+    </header>
+
+    <section class="intro">
+      <p>YOUR ACCOUNT</p>
+      <h1>Make it<br><em>your profile.</em></h1>
+      <span>Actualiza tus datos y conserva tu foto de forma privada en este dispositivo.</span>
+    </section>
+
+    <section class="profile-grid">
+      <aside class="photo-card">
+        <div class="avatar-wrap">
+          @if (photo) {
+            <img [src]="photo.webviewPath" alt="Foto de perfil" />
+          } @else {
+            <span class="initials" aria-label="Sin foto de perfil">{{ initials() }}</span>
+          }
+          <button type="button" (click)="selectPhoto()" [disabled]="selectingPhoto || deleting()">
+            <ion-icon name="camera-outline"></ion-icon>
+            {{ selectingPhoto ? 'Abriendo…' : 'Cambiar foto' }}
+          </button>
+        </div>
+        <p class="local-note"><i></i> Solo en este dispositivo</p>
+
+        <div class="metadata">
+          <div class="metadata-heading"><span>METADATA</span><small>EXIFR</small></div>
+          @if (photo?.metadata?.length) {
+            <dl>
+              @for (item of photo!.metadata; track item.label) {
+                <div><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div>
+              }
+            </dl>
+          } @else {
+            <p>Selecciona una imagen para mostrar sus datos EXIF. Algunas imágenes editadas o descargadas no incluyen metadata.</p>
+          }
+        </div>
+      </aside>
+
+      <form class="profile-form" (ngSubmit)="save()" #profileForm="ngForm">
+        <div class="form-heading"><span>ACCOUNT DETAILS</span><h2>Información personal</h2></div>
+        <div class="message" role="status" aria-live="polite">
+          @if (syncing()) {
+            Sincronizando cambios…
+          } @else if (pending()) {
+            Cambios guardados localmente. Pendientes de sincronización.
+          } @else if (!online()) {
+            Sin conexión. Puedes guardar nombre y correo en este dispositivo.
+          } @else {
+            Los cambios se sincronizarán al guardar.
+          }
+        </div>
+        @if (syncError()) {
+          <p class="message error" role="status">{{ syncError() }}</p>
+        }
+        @if (pending()) {
+          <button type="button" class="save" (click)="retrySync()" [disabled]="!online() || syncing()">Reintentar sincronización</button>
+        }
+
+        <label>
+          <span>Nombre completo</span>
+          <input type="text" name="name" [(ngModel)]="account.name" required minlength="2" autocomplete="name" [disabled]="loading" />
+        </label>
+        <label>
+          <span>Correo electrónico</span>
+          <input type="email" name="email" [(ngModel)]="account.email" required email autocomplete="email" [disabled]="loading" />
+        </label>
+
+        <div class="password-copy">
+          <strong>Cambiar contraseña</strong><span>Requiere conexión y no tener cambios pendientes.</span>
+        </div>
+        <div class="password-grid">
+          <label>
+            <span>Nueva contraseña</span>
+            <input type="password" name="password" [(ngModel)]="account.password" minlength="6" autocomplete="new-password" placeholder="6+ caracteres" [disabled]="!online() || pending() || syncing()" />
+          </label>
+          <label>
+            <span>Confirmar contraseña</span>
+            <input type="password" name="confirmPassword" [(ngModel)]="account.confirmPassword" autocomplete="new-password" placeholder="Repite la contraseña" [disabled]="!online() || pending() || syncing()" />
+          </label>
+        </div>
+
+        @if (errorMessage) { <p class="message error">{{ errorMessage }}</p> }
+        @if (successMessage) { <p class="message success"><ion-icon name="checkmark-circle"></ion-icon>{{ successMessage }}</p> }
+
+        <button class="save" type="submit" [disabled]="profileForm.invalid || saving || loading || syncing() || deleting()">
+          <ion-icon name="save-outline"></ion-icon>{{ saving ? 'Guardando…' : 'Guardar cambios' }}
+        </button>
+        <section class="delete-account" aria-label="Eliminar cuenta">
+          <h3>Eliminar cuenta</h3>
+          <p>Elimina permanentemente tu cuenta y sus sesiones del servidor. Requiere conexión.</p>
+          @if (confirmingDeletion) {
+            <p role="alert">¿Confirmas que deseas eliminar tu cuenta? Esta acción no se puede deshacer y descartará tus cambios pendientes.</p>
+            <button class="save danger" type="button" (click)="deleteAccount()" [disabled]="!online() || saving || loading || syncing() || deleting() || selectingPhoto">{{ deleting() ? 'Eliminando…' : 'Sí, eliminar mi cuenta' }}</button>
+            <button class="save" type="button" (click)="confirmingDeletion = false" [disabled]="deleting()">Cancelar</button>
+          } @else {
+            <button class="save danger" type="button" (click)="confirmingDeletion = true" [disabled]="!online() || saving || loading || syncing()">Eliminar mi cuenta</button>
+          }
+        </section>
+      </form>
+    </section>
+  </main>
+</ion-content>

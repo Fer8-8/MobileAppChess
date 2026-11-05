@@ -1,5 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, effect, inject, signal, untracked } from '@angular/core';
+import { Subscription, timeout } from 'rxjs';
+import { ConnectivityService } from './connectivity.service';
 import { environment } from '../../environments/environment';
 
 export type EventSection = 'all' | 'open' | 'women';
@@ -23,6 +25,12 @@ interface UpsetsResponse {
 @Injectable({ providedIn: 'root' })
 export class ChessEventsService {
   private readonly http = inject(HttpClient);
+  private readonly connection = inject(ConnectivityService);
+  private request?: Subscription;
+  private selection?: [string, EventSection, number | 'all', RatingMode];
+  readonly savedAt = signal<string | null>(null);
+  readonly localCopy = signal(false);
+
   readonly lichessBroadcastApi = 'https://lichess.org/api/broadcast';
   readonly games = signal<UpsetGame[]>([]);
   readonly loading = signal(false);
@@ -45,7 +53,19 @@ export class ChessEventsService {
   ];
 
   constructor() {
-    this.games.set([]);
+    effect(() => {
+      const online = this.connection.online();
+      if (this.selection) untracked(() => this.loadUpsets(...this.selection!, online));
+    });
+    const timer = window.setInterval(() => {
+      if (this.connection.online() && this.loadError() && !this.loading() && this.selection) {
+        this.loadUpsets(...this.selection);
+      }
+    }, 30000);
+    inject(DestroyRef).onDestroy(() => {
+      this.request?.unsubscribe();
+      window.clearInterval(timer);
+    });
   }
 
   loadUpsets(
@@ -55,39 +75,72 @@ export class ChessEventsService {
     rating: RatingMode = 'rated',
     forceRefresh = false
   ): void {
-    this.loading.set(true);
+    this.request?.unsubscribe();
+    this.selection = [eventId, section, round, rating];
+    const key = `outplay:games:${JSON.stringify(this.selection)}`;
+    this.loading.set(false);
     this.loadError.set(null);
     this.games.set([]);
+    this.broadcastCount.set(0);
+    this.isCached.set(false);
+    this.localCopy.set(false);
+    this.savedAt.set(null);
+    try {
+      const cached = JSON.parse(localStorage.getItem(key) || 'null');
+      if (cached && Array.isArray(cached.data) && typeof cached.savedAt === 'string'
+          && cached.data.every((game: UpsetGame) => game && typeof game.id === 'string' && game.winner && game.opponent)) {
+        this.games.set(cached.data);
+        this.broadcastCount.set(cached.broadcastCount || 0);
+        this.savedAt.set(cached.savedAt);
+        this.isCached.set(true);
+        this.localCopy.set(true);
+      }
+    } catch { /* Ignore unreadable cache and try the server. */ }
+    const fallbackMessage = () => this.localCopy()
+      ? 'Showing games saved on this device. They may be out of date.'
+      : 'No games saved for these filters. Connect to download them first.';
+    if (!this.connection.online()) {
+      this.loadError.set(fallbackMessage());
+      return;
+    }
+    this.loading.set(true);
     let params = new HttpParams()
-      .set('event', eventId)
-      .set('section', section)
-      .set('round', String(round))
-      .set('rating', rating)
-      .set('limit', '200');
+      .set('event', eventId).set('section', section).set('round', String(round))
+      .set('rating', rating).set('limit', '200');
     if (forceRefresh) params = params.set('refresh', '1');
-
-    this.http.get<UpsetsResponse>(
-      `${environment.apiUrl}/chess/upsets.php`, { params }
-    ).subscribe({
-      next: response => {
-        this.games.set(response.data);
-        this.broadcastCount.set(response.meta.broadcastCount);
-        this.isCached.set(response.meta.cached);
-        this.loading.set(false);
-      },
-      error: () => {
-        const fallback = eventId === 'budapest-2024' && rating === 'rated'
-          ? this.olympiadGames.filter(game =>
-              (section === 'all' || game.section === section)
-              && (round === 'all' || game.round === round)
-            )
-          : [];
-        this.games.set(fallback);
-        this.loadError.set(fallback.length > 0
-          ? 'Backend unavailable — showing the saved sample'
-          : 'Backend unavailable — no cached games for this filter');
-        this.loading.set(false);
-      },
-    });
+    this.request = this.http.get<UpsetsResponse>(`${environment.apiUrl}/chess/upsets.php`, { params })
+      .pipe(timeout(20000)).subscribe({
+        next: response => {
+          if (!response.success || !Array.isArray(response.data)) {
+            this.loadError.set(fallbackMessage());
+            this.loading.set(false);
+            return;
+          }
+          this.games.set(response.data);
+          this.broadcastCount.set(response.meta.broadcastCount);
+          this.isCached.set(response.meta.cached);
+          this.localCopy.set(false);
+          const savedAt = new Date().toISOString();
+          try {
+            // Bound storage to the twenty most recently downloaded filter combinations.
+            const keys = Object.keys(localStorage).filter(item => item.startsWith('outplay:games:') && item !== key);
+            keys.sort((a, b) => {
+              try { return JSON.parse(localStorage.getItem(a) || '{}').savedAt.localeCompare(JSON.parse(localStorage.getItem(b) || '{}').savedAt); }
+              catch { return 0; }
+            });
+            while (keys.length >= 20) localStorage.removeItem(keys.shift()!);
+            localStorage.setItem(key, JSON.stringify({ data: response.data, broadcastCount: response.meta.broadcastCount, savedAt }));
+            this.savedAt.set(savedAt);
+          } catch {
+            this.savedAt.set(null);
+            this.loadError.set('Games loaded, but device storage is unavailable. This download was not saved offline.');
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loadError.set(`Service unavailable. ${fallbackMessage()}`);
+          this.loading.set(false);
+        },
+      });
   }
 }

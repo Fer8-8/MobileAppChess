@@ -1,3 +1,4 @@
+import { networkErrorMessage } from '../services/network-error';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -35,7 +36,7 @@ export class RegisterPage {
       },
       error: error => {
         this.loading = false;
-        this.errorMessage = error?.error?.message || 'Could not create the account.';
+        this.errorMessage = networkErrorMessage(error, 'No pudimos crear la cuenta.');
       },
     });
   }
